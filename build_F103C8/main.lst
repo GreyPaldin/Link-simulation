@@ -1,0 +1,455 @@
+ARM GAS  C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"main.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.file 1 "Core/Src/main.c"
+  18              		.global	__aeabi_fadd
+  19              		.section	.text.SysTick_Handler,"ax",%progbits
+  20              		.align	1
+  21              		.global	SysTick_Handler
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	SysTick_Handler:
+  27              	.LFB65:
+   1:Core/Src/main.c **** #include "stm32f1xx.h"
+   2:Core/Src/main.c **** #include "simulation.h"
+   3:Core/Src/main.c **** 
+   4:Core/Src/main.c **** // === ВЫБЕРИ ОДИН ВАРИАНТ ===
+   5:Core/Src/main.c **** 
+   6:Core/Src/main.c **** // ВАРИАНТ 1: Звено ВТОРОГО порядка
+   7:Core/Src/main.c **** 
+   8:Core/Src/main.c **** SecondOrderParams params = {
+   9:Core/Src/main.c ****     .K = 1.0f,
+  10:Core/Src/main.c ****     .T2 = 1.0f,
+  11:Core/Src/main.c ****     .E = 1.0f,
+  12:Core/Src/main.c ****     .T_sample = 0.001f,
+  13:Core/Src/main.c ****     .Step = 1.0f
+  14:Core/Src/main.c **** };
+  15:Core/Src/main.c **** SecondOrderState state;
+  16:Core/Src/main.c **** 
+  17:Core/Src/main.c **** /*
+  18:Core/Src/main.c **** // ВАРИАНТ 2: Звено ПЕРВОГО порядка
+  19:Core/Src/main.c **** FirstOrderParams params = {
+  20:Core/Src/main.c ****     .K = 1.0f,
+  21:Core/Src/main.c ****     .T1 = 1.0f,
+  22:Core/Src/main.c ****     .T_sample = 0.001f,
+  23:Core/Src/main.c ****     .Step = 1.0f
+  24:Core/Src/main.c **** };
+  25:Core/Src/main.c **** FirstOrderState state;
+  26:Core/Src/main.c **** */
+  27:Core/Src/main.c **** 
+  28:Core/Src/main.c **** float simulation_time = 0.0f;
+  29:Core/Src/main.c **** volatile float current_output = 0.0f;
+  30:Core/Src/main.c **** 
+  31:Core/Src/main.c **** void SysTick_Handler(void) {
+ARM GAS  C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s 			page 2
+
+
+  28              		.loc 1 31 28 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 10B5     		push	{r4, lr}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 4, -8
+  36              		.cfi_offset 14, -4
+  32:Core/Src/main.c ****     // ВАРИАНТ 1: Для второго порядка
+  33:Core/Src/main.c ****     current_output = SecondOrder_Update(&params, &state);
+  37              		.loc 1 33 5 view .LVU1
+  38              		.loc 1 33 22 is_stmt 0 view .LVU2
+  39 0002 0649     		ldr	r1, .L3
+  40 0004 0648     		ldr	r0, .L3+4
+  41 0006 FFF7FEFF 		bl	SecondOrder_Update
+  42              	.LVL0:
+  43              		.loc 1 33 20 discriminator 1 view .LVU3
+  44 000a 064B     		ldr	r3, .L3+8
+  45 000c 1860     		str	r0, [r3]	@ float
+  34:Core/Src/main.c ****     
+  35:Core/Src/main.c ****     // ВАРИАНТ 2: Для первого порядка
+  36:Core/Src/main.c ****     // current_output = FirstOrder_Update(&params, &state);
+  37:Core/Src/main.c ****     
+  38:Core/Src/main.c ****     simulation_time += 0.001f;
+  46              		.loc 1 38 5 is_stmt 1 view .LVU4
+  47              		.loc 1 38 21 is_stmt 0 view .LVU5
+  48 000e 064C     		ldr	r4, .L3+12
+  49 0010 0649     		ldr	r1, .L3+16
+  50 0012 2068     		ldr	r0, [r4]	@ float
+  51 0014 FFF7FEFF 		bl	__aeabi_fadd
+  52              	.LVL1:
+  53 0018 2060     		str	r0, [r4]	@ float
+  39:Core/Src/main.c **** }
+  54              		.loc 1 39 1 view .LVU6
+  55 001a 10BD     		pop	{r4, pc}
+  56              	.L4:
+  57              		.align	2
+  58              	.L3:
+  59 001c 00000000 		.word	state
+  60 0020 00000000 		.word	params
+  61 0024 00000000 		.word	current_output
+  62 0028 00000000 		.word	simulation_time
+  63 002c 6F12833A 		.word	981668463
+  64              		.cfi_endproc
+  65              	.LFE65:
+  67              		.section	.text.SysTick_Init,"ax",%progbits
+  68              		.align	1
+  69              		.global	SysTick_Init
+  70              		.syntax unified
+  71              		.thumb
+  72              		.thumb_func
+  74              	SysTick_Init:
+  75              	.LFB66:
+  40:Core/Src/main.c **** 
+  41:Core/Src/main.c **** void SysTick_Init(void) {
+  76              		.loc 1 41 25 is_stmt 1 view -0
+ARM GAS  C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s 			page 3
+
+
+  77              		.cfi_startproc
+  78              		@ args = 0, pretend = 0, frame = 0
+  79              		@ frame_needed = 0, uses_anonymous_args = 0
+  80              		@ link register save eliminated.
+  42:Core/Src/main.c ****     SysTick->LOAD = 8000 - 1;
+  81              		.loc 1 42 5 view .LVU8
+  82              		.loc 1 42 19 is_stmt 0 view .LVU9
+  83 0000 4FF0E023 		mov	r3, #-536813568
+  84 0004 41F63F72 		movw	r2, #7999
+  85 0008 5A61     		str	r2, [r3, #20]
+  43:Core/Src/main.c ****     SysTick->VAL = 0;
+  86              		.loc 1 43 5 is_stmt 1 view .LVU10
+  87              		.loc 1 43 18 is_stmt 0 view .LVU11
+  88 000a 0022     		movs	r2, #0
+  89 000c 9A61     		str	r2, [r3, #24]
+  44:Core/Src/main.c ****     SysTick->CTRL = 0x07;
+  90              		.loc 1 44 5 is_stmt 1 view .LVU12
+  91              		.loc 1 44 19 is_stmt 0 view .LVU13
+  92 000e 0722     		movs	r2, #7
+  93 0010 1A61     		str	r2, [r3, #16]
+  45:Core/Src/main.c **** }
+  94              		.loc 1 45 1 view .LVU14
+  95 0012 7047     		bx	lr
+  96              		.cfi_endproc
+  97              	.LFE66:
+  99              		.section	.text.main,"ax",%progbits
+ 100              		.align	1
+ 101              		.global	main
+ 102              		.syntax unified
+ 103              		.thumb
+ 104              		.thumb_func
+ 106              	main:
+ 107              	.LFB67:
+  46:Core/Src/main.c **** 
+  47:Core/Src/main.c **** int main(void) {
+ 108              		.loc 1 47 16 is_stmt 1 view -0
+ 109              		.cfi_startproc
+ 110              		@ Volatile: function does not return.
+ 111              		@ args = 0, pretend = 0, frame = 0
+ 112              		@ frame_needed = 0, uses_anonymous_args = 0
+ 113 0000 08B5     		push	{r3, lr}
+ 114              	.LCFI1:
+ 115              		.cfi_def_cfa_offset 8
+ 116              		.cfi_offset 3, -8
+ 117              		.cfi_offset 14, -4
+  48:Core/Src/main.c ****     RCC->CR |= RCC_CR_HSION;
+ 118              		.loc 1 48 5 view .LVU16
+ 119              		.loc 1 48 8 is_stmt 0 view .LVU17
+ 120 0002 0B4A     		ldr	r2, .L10
+ 121 0004 1368     		ldr	r3, [r2]
+ 122              		.loc 1 48 13 view .LVU18
+ 123 0006 43F00103 		orr	r3, r3, #1
+ 124 000a 1360     		str	r3, [r2]
+  49:Core/Src/main.c ****     while (!(RCC->CR & RCC_CR_HSIRDY));
+ 125              		.loc 1 49 5 is_stmt 1 view .LVU19
+ 126              	.L7:
+ 127              		.loc 1 49 12 discriminator 1 view .LVU20
+ARM GAS  C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s 			page 4
+
+
+ 128              		.loc 1 49 17 is_stmt 0 discriminator 1 view .LVU21
+ 129 000c 084B     		ldr	r3, .L10
+ 130 000e 1B68     		ldr	r3, [r3]
+ 131              		.loc 1 49 12 discriminator 1 view .LVU22
+ 132 0010 13F0020F 		tst	r3, #2
+ 133 0014 FAD0     		beq	.L7
+  50:Core/Src/main.c ****     
+  51:Core/Src/main.c ****     simulation_time = 0.0f;
+ 134              		.loc 1 51 5 is_stmt 1 view .LVU23
+ 135              		.loc 1 51 21 is_stmt 0 view .LVU24
+ 136 0016 0023     		movs	r3, #0
+ 137 0018 064A     		ldr	r2, .L10+4
+ 138 001a 1360     		str	r3, [r2]	@ float
+  52:Core/Src/main.c ****     current_output = 0.0f;
+ 139              		.loc 1 52 5 is_stmt 1 view .LVU25
+ 140              		.loc 1 52 20 is_stmt 0 view .LVU26
+ 141 001c 064A     		ldr	r2, .L10+8
+ 142 001e 1360     		str	r3, [r2]	@ float
+  53:Core/Src/main.c ****     
+  54:Core/Src/main.c ****     // ВАРИАНТ 1: Инициализация второго порядка
+  55:Core/Src/main.c ****     SecondOrder_Init(&state);
+ 143              		.loc 1 55 5 is_stmt 1 view .LVU27
+ 144 0020 0648     		ldr	r0, .L10+12
+ 145 0022 FFF7FEFF 		bl	SecondOrder_Init
+ 146              	.LVL2:
+  56:Core/Src/main.c ****     
+  57:Core/Src/main.c ****     // ВАРИАНТ 2: Инициализация первого порядка
+  58:Core/Src/main.c ****     // FirstOrder_Init(&state);
+  59:Core/Src/main.c ****     
+  60:Core/Src/main.c ****     SysTick_Init();
+ 147              		.loc 1 60 5 view .LVU28
+ 148 0026 FFF7FEFF 		bl	SysTick_Init
+ 149              	.LVL3:
+  61:Core/Src/main.c ****     __enable_irq();
+ 150              		.loc 1 61 5 view .LVU29
+ 151              	.LBB4:
+ 152              	.LBI4:
+ 153              		.file 2 "CMSIS/Include/cmsis_gcc.h"
+   1:CMSIS/Include/cmsis_gcc.h **** /**************************************************************************//**
+   2:CMSIS/Include/cmsis_gcc.h ****  * @file     cmsis_gcc.h
+   3:CMSIS/Include/cmsis_gcc.h ****  * @brief    CMSIS compiler GCC header file
+   4:CMSIS/Include/cmsis_gcc.h ****  * @version  V5.0.4
+   5:CMSIS/Include/cmsis_gcc.h ****  * @date     09. April 2018
+   6:CMSIS/Include/cmsis_gcc.h ****  ******************************************************************************/
+   7:CMSIS/Include/cmsis_gcc.h **** /*
+   8:CMSIS/Include/cmsis_gcc.h ****  * Copyright (c) 2009-2018 Arm Limited. All rights reserved.
+   9:CMSIS/Include/cmsis_gcc.h ****  *
+  10:CMSIS/Include/cmsis_gcc.h ****  * SPDX-License-Identifier: Apache-2.0
+  11:CMSIS/Include/cmsis_gcc.h ****  *
+  12:CMSIS/Include/cmsis_gcc.h ****  * Licensed under the Apache License, Version 2.0 (the License); you may
+  13:CMSIS/Include/cmsis_gcc.h ****  * not use this file except in compliance with the License.
+  14:CMSIS/Include/cmsis_gcc.h ****  * You may obtain a copy of the License at
+  15:CMSIS/Include/cmsis_gcc.h ****  *
+  16:CMSIS/Include/cmsis_gcc.h ****  * www.apache.org/licenses/LICENSE-2.0
+  17:CMSIS/Include/cmsis_gcc.h ****  *
+  18:CMSIS/Include/cmsis_gcc.h ****  * Unless required by applicable law or agreed to in writing, software
+  19:CMSIS/Include/cmsis_gcc.h ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ARM GAS  C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s 			page 5
+
+
+  20:CMSIS/Include/cmsis_gcc.h ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  21:CMSIS/Include/cmsis_gcc.h ****  * See the License for the specific language governing permissions and
+  22:CMSIS/Include/cmsis_gcc.h ****  * limitations under the License.
+  23:CMSIS/Include/cmsis_gcc.h ****  */
+  24:CMSIS/Include/cmsis_gcc.h **** 
+  25:CMSIS/Include/cmsis_gcc.h **** #ifndef __CMSIS_GCC_H
+  26:CMSIS/Include/cmsis_gcc.h **** #define __CMSIS_GCC_H
+  27:CMSIS/Include/cmsis_gcc.h **** 
+  28:CMSIS/Include/cmsis_gcc.h **** /* ignore some GCC warnings */
+  29:CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic push
+  30:CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wsign-conversion"
+  31:CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wconversion"
+  32:CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wunused-parameter"
+  33:CMSIS/Include/cmsis_gcc.h **** 
+  34:CMSIS/Include/cmsis_gcc.h **** /* Fallback for __has_builtin */
+  35:CMSIS/Include/cmsis_gcc.h **** #ifndef __has_builtin
+  36:CMSIS/Include/cmsis_gcc.h ****   #define __has_builtin(x) (0)
+  37:CMSIS/Include/cmsis_gcc.h **** #endif
+  38:CMSIS/Include/cmsis_gcc.h **** 
+  39:CMSIS/Include/cmsis_gcc.h **** /* CMSIS compiler specific defines */
+  40:CMSIS/Include/cmsis_gcc.h **** #ifndef   __ASM
+  41:CMSIS/Include/cmsis_gcc.h ****   #define __ASM                                  __asm
+  42:CMSIS/Include/cmsis_gcc.h **** #endif
+  43:CMSIS/Include/cmsis_gcc.h **** #ifndef   __INLINE
+  44:CMSIS/Include/cmsis_gcc.h ****   #define __INLINE                               inline
+  45:CMSIS/Include/cmsis_gcc.h **** #endif
+  46:CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_INLINE
+  47:CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_INLINE                        static inline
+  48:CMSIS/Include/cmsis_gcc.h **** #endif
+  49:CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_FORCEINLINE                 
+  50:CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_FORCEINLINE                   __attribute__((always_inline)) static inline
+  51:CMSIS/Include/cmsis_gcc.h **** #endif                                           
+  52:CMSIS/Include/cmsis_gcc.h **** #ifndef   __NO_RETURN
+  53:CMSIS/Include/cmsis_gcc.h ****   #define __NO_RETURN                            __attribute__((__noreturn__))
+  54:CMSIS/Include/cmsis_gcc.h **** #endif
+  55:CMSIS/Include/cmsis_gcc.h **** #ifndef   __USED
+  56:CMSIS/Include/cmsis_gcc.h ****   #define __USED                                 __attribute__((used))
+  57:CMSIS/Include/cmsis_gcc.h **** #endif
+  58:CMSIS/Include/cmsis_gcc.h **** #ifndef   __WEAK
+  59:CMSIS/Include/cmsis_gcc.h ****   #define __WEAK                                 __attribute__((weak))
+  60:CMSIS/Include/cmsis_gcc.h **** #endif
+  61:CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED
+  62:CMSIS/Include/cmsis_gcc.h ****   #define __PACKED                               __attribute__((packed, aligned(1)))
+  63:CMSIS/Include/cmsis_gcc.h **** #endif
+  64:CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_STRUCT
+  65:CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_STRUCT                        struct __attribute__((packed, aligned(1)))
+  66:CMSIS/Include/cmsis_gcc.h **** #endif
+  67:CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_UNION
+  68:CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_UNION                         union __attribute__((packed, aligned(1)))
+  69:CMSIS/Include/cmsis_gcc.h **** #endif
+  70:CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32        /* deprecated */
+  71:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  72:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  73:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  74:CMSIS/Include/cmsis_gcc.h ****   struct __attribute__((packed)) T_UINT32 { uint32_t v; };
+  75:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  76:CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32(x)                  (((struct T_UINT32 *)(x))->v)
+ARM GAS  C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s 			page 6
+
+
+  77:CMSIS/Include/cmsis_gcc.h **** #endif
+  78:CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_WRITE
+  79:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  80:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  81:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  82:CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_WRITE { uint16_t v; };
+  83:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  84:CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_WRITE(addr, val)    (void)((((struct T_UINT16_WRITE *)(void *)(addr))-
+  85:CMSIS/Include/cmsis_gcc.h **** #endif
+  86:CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_READ
+  87:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  88:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  89:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  90:CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_READ { uint16_t v; };
+  91:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  92:CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_READ(addr)          (((const struct T_UINT16_READ *)(const void *)(add
+  93:CMSIS/Include/cmsis_gcc.h **** #endif
+  94:CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_WRITE
+  95:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  96:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  97:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  98:CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_WRITE { uint32_t v; };
+  99:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 100:CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_WRITE(addr, val)    (void)((((struct T_UINT32_WRITE *)(void *)(addr))-
+ 101:CMSIS/Include/cmsis_gcc.h **** #endif
+ 102:CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_READ
+ 103:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+ 104:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+ 105:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+ 106:CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_READ { uint32_t v; };
+ 107:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 108:CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_READ(addr)          (((const struct T_UINT32_READ *)(const void *)(add
+ 109:CMSIS/Include/cmsis_gcc.h **** #endif
+ 110:CMSIS/Include/cmsis_gcc.h **** #ifndef   __ALIGNED
+ 111:CMSIS/Include/cmsis_gcc.h ****   #define __ALIGNED(x)                           __attribute__((aligned(x)))
+ 112:CMSIS/Include/cmsis_gcc.h **** #endif
+ 113:CMSIS/Include/cmsis_gcc.h **** #ifndef   __RESTRICT
+ 114:CMSIS/Include/cmsis_gcc.h ****   #define __RESTRICT                             __restrict
+ 115:CMSIS/Include/cmsis_gcc.h **** #endif
+ 116:CMSIS/Include/cmsis_gcc.h **** 
+ 117:CMSIS/Include/cmsis_gcc.h **** 
+ 118:CMSIS/Include/cmsis_gcc.h **** /* ###########################  Core Function Access  ########################### */
+ 119:CMSIS/Include/cmsis_gcc.h **** /** \ingroup  CMSIS_Core_FunctionInterface
+ 120:CMSIS/Include/cmsis_gcc.h ****     \defgroup CMSIS_Core_RegAccFunctions CMSIS Core Register Access Functions
+ 121:CMSIS/Include/cmsis_gcc.h ****   @{
+ 122:CMSIS/Include/cmsis_gcc.h ****  */
+ 123:CMSIS/Include/cmsis_gcc.h **** 
+ 124:CMSIS/Include/cmsis_gcc.h **** /**
+ 125:CMSIS/Include/cmsis_gcc.h ****   \brief   Enable IRQ Interrupts
+ 126:CMSIS/Include/cmsis_gcc.h ****   \details Enables IRQ interrupts by clearing the I-bit in the CPSR.
+ 127:CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 128:CMSIS/Include/cmsis_gcc.h ****  */
+ 129:CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __enable_irq(void)
+ 154              		.loc 2 129 27 view .LVU30
+ 155              	.LBB5:
+ 130:CMSIS/Include/cmsis_gcc.h **** {
+ 131:CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsie i" : : : "memory");
+ARM GAS  C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s 			page 7
+
+
+ 156              		.loc 2 131 3 view .LVU31
+ 157              		.syntax unified
+ 158              	@ 131 "CMSIS/Include/cmsis_gcc.h" 1
+ 159 002a 62B6     		cpsie i
+ 160              	@ 0 "" 2
+ 161              		.thumb
+ 162              		.syntax unified
+ 163              	.L8:
+ 164              	.LBE5:
+ 165              	.LBE4:
+  62:Core/Src/main.c ****     
+  63:Core/Src/main.c ****     while (1) {
+ 166              		.loc 1 63 5 view .LVU32
+  64:Core/Src/main.c ****         // Процессор работает постоянно, память доступна
+  65:Core/Src/main.c ****         // Внешняя программа считывает current_output
+  66:Core/Src/main.c ****     }
+ 167              		.loc 1 66 5 view .LVU33
+  63:Core/Src/main.c ****         // Процессор работает постоянно, память доступна
+ 168              		.loc 1 63 11 view .LVU34
+ 169 002c FEE7     		b	.L8
+ 170              	.L11:
+ 171 002e 00BF     		.align	2
+ 172              	.L10:
+ 173 0030 00100240 		.word	1073876992
+ 174 0034 00000000 		.word	simulation_time
+ 175 0038 00000000 		.word	current_output
+ 176 003c 00000000 		.word	state
+ 177              		.cfi_endproc
+ 178              	.LFE67:
+ 180              		.global	current_output
+ 181              		.section	.bss.current_output,"aw",%nobits
+ 182              		.align	2
+ 185              	current_output:
+ 186 0000 00000000 		.space	4
+ 187              		.global	simulation_time
+ 188              		.section	.bss.simulation_time,"aw",%nobits
+ 189              		.align	2
+ 192              	simulation_time:
+ 193 0000 00000000 		.space	4
+ 194              		.global	state
+ 195              		.section	.bss.state,"aw",%nobits
+ 196              		.align	2
+ 199              	state:
+ 200 0000 00000000 		.space	16
+ 200      00000000 
+ 200      00000000 
+ 200      00000000 
+ 201              		.global	params
+ 202              		.section	.data.params,"aw"
+ 203              		.align	2
+ 206              	params:
+ 207 0000 0000803F 		.word	1065353216
+ 208 0004 0000803F 		.word	1065353216
+ 209 0008 6F12833A 		.word	981668463
+ 210 000c 0000803F 		.word	1065353216
+ 211 0010 0000803F 		.word	1065353216
+ 212              		.text
+ARM GAS  C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s 			page 8
+
+
+ 213              	.Letext0:
+ 214              		.file 3 "D:/Programs/Education/STM32/Tools/Xpack/arm-none-eabi/include/machine/_default_types.h"
+ 215              		.file 4 "D:/Programs/Education/STM32/Tools/Xpack/arm-none-eabi/include/sys/_stdint.h"
+ 216              		.file 5 "CMSIS/Include/core_cm3.h"
+ 217              		.file 6 "CMSIS/Devices/STM32F1xx/Inc/STM32f103xB/stm32f103xb.h"
+ 218              		.file 7 "Core/Inc/simulation.h"
+ARM GAS  C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s 			page 9
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s:20     .text.SysTick_Handler:00000000 $t
+C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s:26     .text.SysTick_Handler:00000000 SysTick_Handler
+C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s:59     .text.SysTick_Handler:0000001c $d
+C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s:199    .bss.state:00000000 state
+C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s:206    .data.params:00000000 params
+C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s:185    .bss.current_output:00000000 current_output
+C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s:192    .bss.simulation_time:00000000 simulation_time
+C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s:68     .text.SysTick_Init:00000000 $t
+C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s:74     .text.SysTick_Init:00000000 SysTick_Init
+C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s:100    .text.main:00000000 $t
+C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s:106    .text.main:00000000 main
+C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s:173    .text.main:00000030 $d
+C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s:182    .bss.current_output:00000000 $d
+C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s:189    .bss.simulation_time:00000000 $d
+C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s:196    .bss.state:00000000 $d
+C:\Users\Dmitriy\AppData\Local\Temp\ccYqsFQZ.s:203    .data.params:00000000 $d
+
+UNDEFINED SYMBOLS
+__aeabi_fadd
+SecondOrder_Update
+SecondOrder_Init

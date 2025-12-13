@@ -1,0 +1,362 @@
+ARM GAS  C:\Users\Dmitriy\AppData\Local\Temp\ccoRbirq.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"simulation.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.file 1 "Core/Src/simulation.c"
+  18              		.section	.text.FirstOrder_Init,"ax",%progbits
+  19              		.align	1
+  20              		.global	FirstOrder_Init
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	FirstOrder_Init:
+  26              	.LVL0:
+  27              	.LFB0:
+   1:Core/Src/simulation.c **** #include "simulation.h"
+   2:Core/Src/simulation.c **** 
+   3:Core/Src/simulation.c **** // ===== ЗВЕНО ПЕРВОГО ПОРЯДКА =====
+   4:Core/Src/simulation.c **** void FirstOrder_Init(FirstOrderState* state) {
+  28              		.loc 1 4 46 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+   5:Core/Src/simulation.c ****     state->y = 0.0f;
+  33              		.loc 1 5 5 view .LVU1
+  34              		.loc 1 5 14 is_stmt 0 view .LVU2
+  35 0000 0023     		movs	r3, #0
+  36 0002 0360     		str	r3, [r0]	@ float
+   6:Core/Src/simulation.c ****     state->y_prev = 0.0f;
+  37              		.loc 1 6 5 is_stmt 1 view .LVU3
+  38              		.loc 1 6 19 is_stmt 0 view .LVU4
+  39 0004 4360     		str	r3, [r0, #4]	@ float
+   7:Core/Src/simulation.c **** }
+  40              		.loc 1 7 1 view .LVU5
+  41 0006 7047     		bx	lr
+  42              		.cfi_endproc
+  43              	.LFE0:
+  45              		.global	__aeabi_fmul
+  46              		.global	__aeabi_fsub
+  47              		.global	__aeabi_fdiv
+  48              		.global	__aeabi_fadd
+  49              		.section	.text.FirstOrder_Update,"ax",%progbits
+  50              		.align	1
+  51              		.global	FirstOrder_Update
+  52              		.syntax unified
+ARM GAS  C:\Users\Dmitriy\AppData\Local\Temp\ccoRbirq.s 			page 2
+
+
+  53              		.thumb
+  54              		.thumb_func
+  56              	FirstOrder_Update:
+  57              	.LVL1:
+  58              	.LFB1:
+   8:Core/Src/simulation.c **** 
+   9:Core/Src/simulation.c **** float FirstOrder_Update(const FirstOrderParams* params, FirstOrderState* state) {
+  59              		.loc 1 9 81 is_stmt 1 view -0
+  60              		.cfi_startproc
+  61              		@ args = 0, pretend = 0, frame = 0
+  62              		@ frame_needed = 0, uses_anonymous_args = 0
+  63              		.loc 1 9 81 is_stmt 0 view .LVU7
+  64 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+  65              	.LCFI0:
+  66              		.cfi_def_cfa_offset 24
+  67              		.cfi_offset 3, -24
+  68              		.cfi_offset 4, -20
+  69              		.cfi_offset 5, -16
+  70              		.cfi_offset 6, -12
+  71              		.cfi_offset 7, -8
+  72              		.cfi_offset 14, -4
+  73 0002 0446     		mov	r4, r0
+  74 0004 0D46     		mov	r5, r1
+  10:Core/Src/simulation.c ****     // Простая формула как в машине состояний
+  11:Core/Src/simulation.c ****     state->y = state->y_prev + params->T_sample * (params->K * params->Step - state->y_prev) / para
+  75              		.loc 1 11 5 is_stmt 1 view .LVU8
+  76              		.loc 1 11 21 is_stmt 0 view .LVU9
+  77 0006 4E68     		ldr	r6, [r1, #4]	@ float
+  78              		.loc 1 11 38 view .LVU10
+  79 0008 8768     		ldr	r7, [r0, #8]	@ float
+  80              		.loc 1 11 62 view .LVU11
+  81 000a C168     		ldr	r1, [r0, #12]	@ float
+  82              	.LVL2:
+  83              		.loc 1 11 62 view .LVU12
+  84 000c 0068     		ldr	r0, [r0]	@ float
+  85              	.LVL3:
+  86              		.loc 1 11 62 view .LVU13
+  87 000e FFF7FEFF 		bl	__aeabi_fmul
+  88              	.LVL4:
+  89              		.loc 1 11 77 view .LVU14
+  90 0012 3146     		mov	r1, r6
+  91 0014 FFF7FEFF 		bl	__aeabi_fsub
+  92              	.LVL5:
+  93 0018 0146     		mov	r1, r0
+  94              		.loc 1 11 49 view .LVU15
+  95 001a 3846     		mov	r0, r7
+  96 001c FFF7FEFF 		bl	__aeabi_fmul
+  97              	.LVL6:
+  98              		.loc 1 11 94 view .LVU16
+  99 0020 6168     		ldr	r1, [r4, #4]	@ float
+ 100 0022 FFF7FEFF 		bl	__aeabi_fdiv
+ 101              	.LVL7:
+ 102 0026 0146     		mov	r1, r0
+ 103              		.loc 1 11 30 view .LVU17
+ 104 0028 3046     		mov	r0, r6
+ 105 002a FFF7FEFF 		bl	__aeabi_fadd
+ 106              	.LVL8:
+ARM GAS  C:\Users\Dmitriy\AppData\Local\Temp\ccoRbirq.s 			page 3
+
+
+ 107              		.loc 1 11 14 view .LVU18
+ 108 002e 2860     		str	r0, [r5]	@ float
+  12:Core/Src/simulation.c ****     
+  13:Core/Src/simulation.c ****     // Обновляем предыдущее значение
+  14:Core/Src/simulation.c ****     state->y_prev = state->y;
+ 109              		.loc 1 14 5 is_stmt 1 view .LVU19
+ 110              		.loc 1 14 19 is_stmt 0 view .LVU20
+ 111 0030 6860     		str	r0, [r5, #4]	@ float
+  15:Core/Src/simulation.c ****     
+  16:Core/Src/simulation.c ****     return state->y;
+ 112              		.loc 1 16 5 is_stmt 1 view .LVU21
+  17:Core/Src/simulation.c **** }
+ 113              		.loc 1 17 1 is_stmt 0 view .LVU22
+ 114 0032 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 115              		.loc 1 17 1 view .LVU23
+ 116              		.cfi_endproc
+ 117              	.LFE1:
+ 119              		.section	.text.SecondOrder_Init,"ax",%progbits
+ 120              		.align	1
+ 121              		.global	SecondOrder_Init
+ 122              		.syntax unified
+ 123              		.thumb
+ 124              		.thumb_func
+ 126              	SecondOrder_Init:
+ 127              	.LVL9:
+ 128              	.LFB2:
+  18:Core/Src/simulation.c **** 
+  19:Core/Src/simulation.c **** // ===== ЗВЕНО ВТОРОГО ПОРЯДКА =====
+  20:Core/Src/simulation.c **** void SecondOrder_Init(SecondOrderState* state) {
+ 129              		.loc 1 20 48 is_stmt 1 view -0
+ 130              		.cfi_startproc
+ 131              		@ args = 0, pretend = 0, frame = 0
+ 132              		@ frame_needed = 0, uses_anonymous_args = 0
+ 133              		@ link register save eliminated.
+  21:Core/Src/simulation.c ****     state->y = 0.0f;
+ 134              		.loc 1 21 5 view .LVU25
+ 135              		.loc 1 21 14 is_stmt 0 view .LVU26
+ 136 0000 0023     		movs	r3, #0
+ 137 0002 0360     		str	r3, [r0]	@ float
+  22:Core/Src/simulation.c ****     state->y_prev = 0.0f;
+ 138              		.loc 1 22 5 is_stmt 1 view .LVU27
+ 139              		.loc 1 22 19 is_stmt 0 view .LVU28
+ 140 0004 4360     		str	r3, [r0, #4]	@ float
+  23:Core/Src/simulation.c ****     state->dy = 0.0f;
+ 141              		.loc 1 23 5 is_stmt 1 view .LVU29
+ 142              		.loc 1 23 15 is_stmt 0 view .LVU30
+ 143 0006 8360     		str	r3, [r0, #8]	@ float
+  24:Core/Src/simulation.c ****     state->dy_prev = 0.0f;
+ 144              		.loc 1 24 5 is_stmt 1 view .LVU31
+ 145              		.loc 1 24 20 is_stmt 0 view .LVU32
+ 146 0008 C360     		str	r3, [r0, #12]	@ float
+  25:Core/Src/simulation.c **** }
+ 147              		.loc 1 25 1 view .LVU33
+ 148 000a 7047     		bx	lr
+ 149              		.cfi_endproc
+ 150              	.LFE2:
+ 152              		.section	.text.SecondOrder_Update,"ax",%progbits
+ARM GAS  C:\Users\Dmitriy\AppData\Local\Temp\ccoRbirq.s 			page 4
+
+
+ 153              		.align	1
+ 154              		.global	SecondOrder_Update
+ 155              		.syntax unified
+ 156              		.thumb
+ 157              		.thumb_func
+ 159              	SecondOrder_Update:
+ 160              	.LVL10:
+ 161              	.LFB3:
+  26:Core/Src/simulation.c **** 
+  27:Core/Src/simulation.c **** float SecondOrder_Update(const SecondOrderParams* params, SecondOrderState* state) {
+ 162              		.loc 1 27 84 is_stmt 1 view -0
+ 163              		.cfi_startproc
+ 164              		@ args = 0, pretend = 0, frame = 0
+ 165              		@ frame_needed = 0, uses_anonymous_args = 0
+ 166              		.loc 1 27 84 is_stmt 0 view .LVU35
+ 167 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 168              	.LCFI1:
+ 169              		.cfi_def_cfa_offset 32
+ 170              		.cfi_offset 4, -32
+ 171              		.cfi_offset 5, -28
+ 172              		.cfi_offset 6, -24
+ 173              		.cfi_offset 7, -20
+ 174              		.cfi_offset 8, -16
+ 175              		.cfi_offset 9, -12
+ 176              		.cfi_offset 10, -8
+ 177              		.cfi_offset 14, -4
+ 178 0004 0546     		mov	r5, r0
+ 179 0006 0C46     		mov	r4, r1
+  28:Core/Src/simulation.c ****     // Расчет производной (правильно)
+  29:Core/Src/simulation.c ****     float dy = (state->y - state->y_prev) / params->T_sample;
+ 180              		.loc 1 29 5 is_stmt 1 view .LVU36
+ 181              		.loc 1 29 22 is_stmt 0 view .LVU37
+ 182 0008 0E68     		ldr	r6, [r1]	@ float
+ 183              		.loc 1 29 26 view .LVU38
+ 184 000a 4968     		ldr	r1, [r1, #4]	@ float
+ 185              	.LVL11:
+ 186              		.loc 1 29 26 view .LVU39
+ 187 000c 3046     		mov	r0, r6
+ 188              	.LVL12:
+ 189              		.loc 1 29 26 view .LVU40
+ 190 000e FFF7FEFF 		bl	__aeabi_fsub
+ 191              	.LVL13:
+ 192              		.loc 1 29 51 view .LVU41
+ 193 0012 AF68     		ldr	r7, [r5, #8]	@ float
+ 194              		.loc 1 29 11 view .LVU42
+ 195 0014 3946     		mov	r1, r7
+ 196 0016 FFF7FEFF 		bl	__aeabi_fdiv
+ 197              	.LVL14:
+ 198 001a 8146     		mov	r9, r0
+ 199              	.LVL15:
+  30:Core/Src/simulation.c ****     
+  31:Core/Src/simulation.c ****     // ПРАВИЛЬНАЯ дискретная форма: T2²·d²y/dt² + T2·E·dy/dt + y = K
+  32:Core/Src/simulation.c ****     // У тебя в Matlab: ddy = (K*Step - y - T2*1*dy) / T2;
+  33:Core/Src/simulation.c ****     float ddy = (params->K * params->Step - state->y - params->T2 * params->E * dy) / params->T2;
+ 200              		.loc 1 33 5 is_stmt 1 view .LVU43
+ 201              		.loc 1 33 28 is_stmt 0 view .LVU44
+ 202 001c E968     		ldr	r1, [r5, #12]	@ float
+ARM GAS  C:\Users\Dmitriy\AppData\Local\Temp\ccoRbirq.s 			page 5
+
+
+ 203 001e 2868     		ldr	r0, [r5]	@ float
+ 204              	.LVL16:
+ 205              		.loc 1 33 28 view .LVU45
+ 206 0020 FFF7FEFF 		bl	__aeabi_fmul
+ 207              	.LVL17:
+ 208              		.loc 1 33 43 view .LVU46
+ 209 0024 3146     		mov	r1, r6
+ 210 0026 FFF7FEFF 		bl	__aeabi_fsub
+ 211              	.LVL18:
+ 212 002a 8046     		mov	r8, r0
+ 213              		.loc 1 33 62 view .LVU47
+ 214 002c D5F804A0 		ldr	r10, [r5, #4]	@ float
+ 215              		.loc 1 33 67 view .LVU48
+ 216 0030 2969     		ldr	r1, [r5, #16]	@ float
+ 217 0032 5046     		mov	r0, r10
+ 218 0034 FFF7FEFF 		bl	__aeabi_fmul
+ 219              	.LVL19:
+ 220              		.loc 1 33 79 view .LVU49
+ 221 0038 4946     		mov	r1, r9
+ 222 003a FFF7FEFF 		bl	__aeabi_fmul
+ 223              	.LVL20:
+ 224 003e 0146     		mov	r1, r0
+ 225              		.loc 1 33 54 view .LVU50
+ 226 0040 4046     		mov	r0, r8
+ 227 0042 FFF7FEFF 		bl	__aeabi_fsub
+ 228              	.LVL21:
+ 229              		.loc 1 33 11 view .LVU51
+ 230 0046 5146     		mov	r1, r10
+ 231 0048 FFF7FEFF 		bl	__aeabi_fdiv
+ 232              	.LVL22:
+ 233 004c 0146     		mov	r1, r0
+ 234              	.LVL23:
+  34:Core/Src/simulation.c ****     
+  35:Core/Src/simulation.c ****     // Интегрирование (правильно)
+  36:Core/Src/simulation.c ****     float dy_new = state->dy + ddy * params->T_sample;
+ 235              		.loc 1 36 5 is_stmt 1 view .LVU52
+ 236              		.loc 1 36 25 is_stmt 0 view .LVU53
+ 237 004e D4F80880 		ldr	r8, [r4, #8]	@ float
+ 238              		.loc 1 36 36 view .LVU54
+ 239 0052 3846     		mov	r0, r7
+ 240              	.LVL24:
+ 241              		.loc 1 36 36 view .LVU55
+ 242 0054 FFF7FEFF 		bl	__aeabi_fmul
+ 243              	.LVL25:
+ 244              		.loc 1 36 36 view .LVU56
+ 245 0058 0146     		mov	r1, r0
+ 246              		.loc 1 36 11 view .LVU57
+ 247 005a 4046     		mov	r0, r8
+ 248 005c FFF7FEFF 		bl	__aeabi_fadd
+ 249              	.LVL26:
+ 250 0060 0546     		mov	r5, r0
+ 251              	.LVL27:
+  37:Core/Src/simulation.c ****     float y_new = state->y + dy_new * params->T_sample;
+ 252              		.loc 1 37 5 is_stmt 1 view .LVU58
+ 253              		.loc 1 37 37 is_stmt 0 view .LVU59
+ 254 0062 0146     		mov	r1, r0
+ 255 0064 3846     		mov	r0, r7
+ARM GAS  C:\Users\Dmitriy\AppData\Local\Temp\ccoRbirq.s 			page 6
+
+
+ 256              	.LVL28:
+ 257              		.loc 1 37 37 view .LVU60
+ 258 0066 FFF7FEFF 		bl	__aeabi_fmul
+ 259              	.LVL29:
+ 260              		.loc 1 37 37 view .LVU61
+ 261 006a 0146     		mov	r1, r0
+ 262              		.loc 1 37 11 view .LVU62
+ 263 006c 3046     		mov	r0, r6
+ 264 006e FFF7FEFF 		bl	__aeabi_fadd
+ 265              	.LVL30:
+  38:Core/Src/simulation.c ****     
+  39:Core/Src/simulation.c ****     // Обновление состояний
+  40:Core/Src/simulation.c ****     state->y_prev = state->y;
+ 266              		.loc 1 40 5 is_stmt 1 view .LVU63
+ 267              		.loc 1 40 19 is_stmt 0 view .LVU64
+ 268 0072 6660     		str	r6, [r4, #4]	@ float
+  41:Core/Src/simulation.c ****     state->y = y_new;
+ 269              		.loc 1 41 5 is_stmt 1 view .LVU65
+ 270              		.loc 1 41 14 is_stmt 0 view .LVU66
+ 271 0074 2060     		str	r0, [r4]	@ float
+  42:Core/Src/simulation.c ****     state->dy_prev = state->dy;
+ 272              		.loc 1 42 5 is_stmt 1 view .LVU67
+ 273              		.loc 1 42 20 is_stmt 0 view .LVU68
+ 274 0076 C4F80C80 		str	r8, [r4, #12]	@ float
+  43:Core/Src/simulation.c ****     state->dy = dy_new;
+ 275              		.loc 1 43 5 is_stmt 1 view .LVU69
+ 276              		.loc 1 43 15 is_stmt 0 view .LVU70
+ 277 007a A560     		str	r5, [r4, #8]	@ float
+  44:Core/Src/simulation.c ****     
+  45:Core/Src/simulation.c ****     return state->y;
+ 278              		.loc 1 45 5 is_stmt 1 view .LVU71
+  46:Core/Src/simulation.c **** }...
+ 279              		.loc 1 46 1 is_stmt 0 view .LVU72
+ 280 007c BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 281              		.loc 1 46 1 view .LVU73
+ 282              		.cfi_endproc
+ 283              	.LFE3:
+ 285              		.text
+ 286              	.Letext0:
+ 287              		.file 2 "Core/Inc/simulation.h"
+ARM GAS  C:\Users\Dmitriy\AppData\Local\Temp\ccoRbirq.s 			page 7
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 simulation.c
+C:\Users\Dmitriy\AppData\Local\Temp\ccoRbirq.s:19     .text.FirstOrder_Init:00000000 $t
+C:\Users\Dmitriy\AppData\Local\Temp\ccoRbirq.s:25     .text.FirstOrder_Init:00000000 FirstOrder_Init
+C:\Users\Dmitriy\AppData\Local\Temp\ccoRbirq.s:50     .text.FirstOrder_Update:00000000 $t
+C:\Users\Dmitriy\AppData\Local\Temp\ccoRbirq.s:56     .text.FirstOrder_Update:00000000 FirstOrder_Update
+C:\Users\Dmitriy\AppData\Local\Temp\ccoRbirq.s:120    .text.SecondOrder_Init:00000000 $t
+C:\Users\Dmitriy\AppData\Local\Temp\ccoRbirq.s:126    .text.SecondOrder_Init:00000000 SecondOrder_Init
+C:\Users\Dmitriy\AppData\Local\Temp\ccoRbirq.s:153    .text.SecondOrder_Update:00000000 $t
+C:\Users\Dmitriy\AppData\Local\Temp\ccoRbirq.s:159    .text.SecondOrder_Update:00000000 SecondOrder_Update
+
+UNDEFINED SYMBOLS
+__aeabi_fmul
+__aeabi_fsub
+__aeabi_fdiv
+__aeabi_fadd
